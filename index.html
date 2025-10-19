@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Africa’s Population – Interactive Quiz</title>
+<style>
+  :root{ --maxw: 900px; }
+  body{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin:0; padding:0; background:#f7f7f9; color:#111; }
+  header{ background:#111; color:#fff; padding:16px 20px; text-align:center; }
+  main{ max-width: var(--maxw); margin: 0 auto; padding: 16px; }
+  .card{ background:#fff; border-radius:12px; padding: 18px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  h1{ font-size: 1.25rem; margin: 0 0 6px; }
+  .sub{ color:#444; font-size:.95rem; margin-bottom:8px; }
+  .meta{ font-size:.95rem; color:#333; margin-bottom: 12px; }
+  .q{ margin: 12px 0 8px; font-weight:600; }
+  .opt{ display:flex; gap:10px; align-items:flex-start; padding:8px 10px; border-radius:8px; }
+  .opt input{ margin-top:2px; transform: scale(1.2); }
+  .opt label{ flex:1; line-height:1.4; }
+  .opt:hover{ background:#f1f5ff; }
+  .controls{ display:flex; gap:12px; flex-wrap: wrap; margin-top: 12px; }
+  button{ padding: 10px 14px; border-radius:10px; border:1px solid #111; background:#111; color:#fff; font-weight:600; cursor:pointer; }
+  button.secondary{ background:#fff; color:#111; }
+  .result{ font-size:1.05rem; font-weight:700; padding: 12px 14px; border-radius:10px; background:#eef9ef; color:#0c5d16; display:none; margin-top:8px; }
+  .disabled{ opacity:.7; pointer-events:none; }
+  footer{ text-align:center; font-size:.85rem; color:#666; padding: 24px 12px; }
+  .req{ color:#b40000; font-weight:600; display:none; margin-top:6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Africa’s Population – Interactive Quiz</h1>
+  <div class="sub">Video: “Is Africa ready for its population boom? | CNBC Explains”</div>
+</header>
+<main>
+  <section class="card">
+    <div class="meta"><strong>Instructions:</strong> Watch the video and choose the correct answer (a, b, or c). One answer is correct. When you finish, tap <em>Submit</em>. You will see how many mistakes you made, but not the correct answers.</div>
+    <form id="quiz" novalidate></form>
+    <div class="req" id="req">Please answer all questions before submitting.</div>
+    <div class="controls">
+      <button type="button" id="submitBtn">Submit</button>
+      <button type="button" class="secondary" id="resetBtn">Reset quiz</button>
+    </div>
+    <div class="result" id="result" role="status" aria-live="polite"></div>
+  </section>
+  <footer>No data stored. Works in any modern browser.</footer>
+</main>
+<script>
+const data=[
+  {q:"By around 2050, which country is projected to become the world’s third most populous?",a:["United States","India","Nigeria"],correct:2},
+  {q:"How much of the world’s population growth to 2050 is expected to happen in Africa?",a:["Less than 10%","About half or more","None"],correct:1},
+  {q:"Compared with other world regions, Africa’s population is generally…",a:["The oldest","The youngest","The same age everywhere"],correct:1},
+  {q:"Which African city is already a giant and expected to keep growing fast?",a:["Reykjavik","Zurich","Lagos"],correct:2},
+  {q:"A major challenge of rapid population growth highlighted in the video is the need to create enough…",a:["Snowstorms","Jobs","Deserts"],correct:1},
+  {q:"Urbanization in Africa is…",a:["Decreasing every year","Growing quickly","Already 100%"],correct:1},
+  {q:"By around 2050, Africa’s population is projected to be close to…",a:["2.5 billion","500 million","10 billion"],correct:0},
+  {q:"When a large working-age population helps the economy only if there are enough jobs and skills, this is called…",a:["Demographic dividend","Ice Age","Greenhouse effect"],correct:0},
+  {q:"By the end of the century, the biggest share of the world’s young people is expected to live in…",a:["Europe","Sub-Saharan Africa","Antarctica"],correct:1},
+  {q:"Which factor helps population growth slow over time?",a:["Better access to education and family planning","Less healthcare and vaccination","More deserts"],correct:0},
+  {q:"Nigeria’s most talked-about mega-city in population discussions is…",a:["Lagos","Nairobi","Casablanca"],correct:0},
+  {q:"Which organization provides many long-term population projections used in the video and elsewhere?",a:["FIFA","United Nations","NASA"],correct:1},
+  {q:"A key risk of very fast city growth without good planning is…",a:["More national parks","Overcrowding and strained services","Extra public holidays"],correct:1},
+  {q:"By around 2050, Africa’s share of the world’s population is expected to be…",a:["Roughly one quarter","About 1%","About three quarters"],correct:0},
+  {q:"The video asks if Africa is “ready” mainly because population growth will require big investments in…",a:["Colder weather","Jobs, education and infrastructure","Fewer babies everywhere"],correct:1}
+];
+const form=document.getElementById('quiz'); const submitBtn=document.getElementById('submitBtn'); const resetBtn=document.getElementById('resetBtn'); const result=document.getElementById('result'); const req=document.getElementById('req');
+function render(){ data.forEach((item,idx)=>{ const block=document.createElement('div'); block.className='qblock'; const q=document.createElement('div'); q.className='q'; q.textContent=(idx+1)+') '+item.q; block.appendChild(q); item.a.forEach((opt,i)=>{ const optDiv=document.createElement('div'); optDiv.className='opt'; const input=document.createElement('input'); input.type='radio'; input.name='q'+idx; input.id='q'+idx+'o'+i; input.value=i; const label=document.createElement('label'); label.setAttribute('for', input.id); label.textContent=['a) ','b) ','c) '][i]+opt; optDiv.appendChild(input); optDiv.appendChild(label); block.appendChild(optDiv); }); const hr=document.createElement('hr'); hr.style.border='0'; hr.style.borderTop='1px solid #eee'; block.appendChild(hr); form.appendChild(block); }); }
+render();
+function getAnswers(){ const answers=[]; for(let i=0;i<data.length;i++){ const checked=form.querySelector('input[name="q'+i+'"]:checked'); answers.push(checked?parseInt(checked.value,10):null);} return answers;}
+function allAnswered(ans){ return ans.every(a=>a!==null);}
+function lockForm(){ form.querySelectorAll('input').forEach(el=>el.disabled=true); submitBtn.classList.add('disabled');}
+function unlockForm(){ form.querySelectorAll('input').forEach(el=>el.disabled=false); submitBtn.classList.remove('disabled');}
+submitBtn.addEventListener('click',()=>{ const ans=getAnswers(); if(!allAnswered(ans)){ req.style.display='block'; req.focus(); return;} req.style.display='none'; let mistakes=0; ans.forEach((v,i)=>{ if(v!==data[i].correct) mistakes++; }); result.style.display='block'; result.textContent=`You made ${mistakes} mistake${mistakes===1?'':'s'} out of ${data.length}.`; lockForm();});
+resetBtn.addEventListener('click',()=>{ form.reset(); result.style.display='none'; req.style.display='none'; unlockForm(); window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+</body>
+</html>
